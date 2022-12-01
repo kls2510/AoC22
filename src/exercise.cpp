@@ -13,7 +13,7 @@ std::vector<int> IntVectorExercise::formatExerciseData(std::fstream& contents)
     std::string line;
 
     while (getline (contents, line)) {
-        v.push_back(std::stoi(line));
+        line != "" ? v.push_back(std::stoi(line)) : v.push_back(-1);
     }
 
     return v;
