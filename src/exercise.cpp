@@ -18,3 +18,18 @@ std::vector<int> IntVectorExercise::formatExerciseData(std::fstream& contents)
 
     return v;
 }
+
+template <>
+std::vector<std::tuple<char, char>> CharTupleExercise::formatExerciseData(std::fstream& contents)
+{
+    std::vector<std::tuple<char, char>> v = std::vector<std::tuple<char, char>>();
+    std::string line;
+
+    while (getline (contents, line)) {
+        std::string s1 = line.substr(0, 1);
+        std::string s2 = line.substr(2, 3);
+        v.push_back(std::tuple(s1[0], s2[0]));
+    }
+
+    return v;
+}
