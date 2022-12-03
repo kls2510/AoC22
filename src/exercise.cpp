@@ -33,3 +33,17 @@ std::vector<std::tuple<char, char>> CharTupleExercise::formatExerciseData(std::f
 
     return v;
 }
+
+
+template <>
+std::vector<std::string> StringVectorExercise::formatExerciseData(std::fstream& contents)
+{
+    std::vector<std::string> v = std::vector<std::string>();
+    std::string line;
+
+    while (getline (contents, line)) {
+        v.push_back(line);
+    }
+
+    return v;
+}

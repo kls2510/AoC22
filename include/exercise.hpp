@@ -33,6 +33,7 @@
 
         typedef Exercise<std::vector<int>> IntVectorExercise;
         typedef Exercise<std::vector<std::tuple<char, char>>> CharTupleExercise;
+        typedef Exercise<std::vector<std::string>> StringVectorExercise;
 
     }
 
