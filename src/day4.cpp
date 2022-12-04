@@ -1,5 +1,4 @@
 #include <iostream>
-#include <set>
 #include <exercise.hpp>
 
 using namespace exercise;
