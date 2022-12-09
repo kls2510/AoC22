@@ -34,7 +34,7 @@
         typedef Exercise<std::vector<int>> IntVectorExercise;
         typedef Exercise<std::vector<std::tuple<char, char>>> CharTupleExercise;
         typedef Exercise<std::vector<std::string>> StringVectorExercise;
-
+        typedef Exercise<std::vector<std::vector<short>>> DigitGridExercise;
     }
 
 #endif  // EXERCISE_H_

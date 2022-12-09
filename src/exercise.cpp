@@ -47,3 +47,19 @@ std::vector<std::string> StringVectorExercise::formatExerciseData(std::fstream& 
 
     return v;
 }
+
+template <>
+std::vector<std::vector<short>> DigitGridExercise::formatExerciseData(std::fstream& contents)
+{
+    std::vector<std::vector<short>> v = std::vector<std::vector<short>>();
+    std::vector<short> row;
+    std::string line;
+
+    while (getline (contents, line)) {
+        row = std::vector<short>();
+        for (auto c: line) row.push_back(c - '0');
+        v.push_back(row);
+    }
+
+    return v;
+}
