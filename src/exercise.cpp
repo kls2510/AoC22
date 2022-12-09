@@ -63,3 +63,18 @@ std::vector<std::vector<short>> DigitGridExercise::formatExerciseData(std::fstre
 
     return v;
 }
+
+template <>
+std::vector<std::pair<char, int>> CharIntPairExercise::formatExerciseData(std::fstream& contents)
+{
+    std::vector<std::pair<char, int>> v = std::vector<std::pair<char, int>>();
+    std::string line;
+
+    while (getline (contents, line)) {
+        std::string s1 = line.substr(0, 1);
+        std::string s2 = line.substr(2, line.length());
+        v.push_back(std::tuple(s1[0], std::stoi(s2)));
+    }
+
+    return v;
+}
