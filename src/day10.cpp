@@ -27,7 +27,7 @@ int noopOrAddCycle1(int reg, int& cycleNo)
 
 bool isHit(int reg, int cycleNo, int screenWidth)
 {
-    int horizontalCRTPos(cycleNo % screenWidth - 1 < 0 ? 39: cycleNo % screenWidth - 1);
+    int horizontalCRTPos(cycleNo % screenWidth == 0 ? screenWidth - 1: cycleNo % screenWidth - 1);
     return (
         reg - 1 <= horizontalCRTPos && reg + 1 >= horizontalCRTPos
     );
