@@ -36,6 +36,7 @@
         typedef Exercise<std::vector<std::pair<char, int>>> CharIntPairExercise;
         typedef Exercise<std::vector<std::string>> StringVectorExercise;
         typedef Exercise<std::vector<std::vector<short>>> DigitGridExercise;
+        typedef Exercise<std::vector<std::vector<char>>> CharGridExercise;
     }
 
 #endif  // EXERCISE_H_

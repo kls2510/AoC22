@@ -78,3 +78,19 @@ std::vector<std::pair<char, int>> CharIntPairExercise::formatExerciseData(std::f
 
     return v;
 }
+
+template <>
+std::vector<std::vector<char>> CharGridExercise::formatExerciseData(std::fstream& contents)
+{
+    std::vector<std::vector<char>> v = std::vector<std::vector<char>>();
+    std::vector<char> row;
+    std::string line;
+
+    while (getline (contents, line)) {
+        row = std::vector<char>();
+        for (auto c: line) row.push_back(c);
+        v.push_back(row);
+    }
+
+    return v;
+}
