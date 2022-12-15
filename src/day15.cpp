@@ -12,6 +12,7 @@ class Sensor
         // x across, y down
         std::pair<int, int> loc;
         std::pair<int, int> closestBeaconLoc;
+        int manhattanDistance;
 
     public:
         Sensor(std::string description)
@@ -25,17 +26,13 @@ class Sensor
                 else if (wordIndex == 9) this -> closestBeaconLoc = std::make_pair(currentCoord, std::stoi(word.substr(2, word.length() - 1)));
                 wordIndex++;
             }
-        }
-        int manhattanDistance()
-        {
-            int result = std::abs(this -> loc.first - this -> closestBeaconLoc.first) + std::abs(this -> loc.second - this -> closestBeaconLoc.second);
-            return result;
+            this -> manhattanDistance = std::abs(this -> loc.first - this -> closestBeaconLoc.first) + std::abs(this -> loc.second - this -> closestBeaconLoc.second);
         }
         bool isMinDistanceToRowShorterThanBeacon(int row)
         {
             if (this -> closestBeaconLoc == std::make_pair(this -> loc.first, row)) return false;
             int manhattanDistToRow(std::abs(this -> loc.second - row));
-            return manhattanDistToRow <= this -> manhattanDistance();
+            return manhattanDistToRow <= this -> manhattanDistance;
         }
         std::optional<std::pair<int, int>> getColRangeWhereMinDistanceToRowShorterThanBeacon(int row)
         {
@@ -43,7 +40,7 @@ class Sensor
             {
                 return {};
             }
-            int manhattanDistToRow(std::abs(this -> loc.second - row)), manhattanDistToBeacon(this -> manhattanDistance());
+            int manhattanDistToRow(std::abs(this -> loc.second - row)), manhattanDistToBeacon(this -> manhattanDistance);
             int remainder = manhattanDistToBeacon - manhattanDistToRow;
             int lowerRemainder = this->closestBeaconLoc.first == loc.first - remainder ? remainder - 1: remainder;
             int upperRemainder = this->closestBeaconLoc.first == loc.first + remainder ? remainder - 1: remainder;
@@ -63,16 +60,15 @@ std::vector<Sensor> parseInputLines(std::vector<std::string> inp)
     return sensors;
 }
 
-std::vector<std::pair<int, int>> getDistinctRangesFromAllRanges(std::vector<std::pair<int, int>> allRanges)
+void getDistinctRangesFromAllRanges(
+    std::vector<std::pair<int, int>>& allRanges,
+    std::vector<std::pair<int, int>>& distinctRanges
+)
 {
+    distinctRanges.clear();
     // sort ranges by start
-    std::sort(allRanges.begin(), allRanges.end(), [](
-        const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) {
-            return lhs.first < rhs.first;
-        }
-    );
+    std::sort(allRanges.begin(), allRanges.end());
     // merge ranges
-    std::vector<std::pair<int, int>> distinctRanges = std::vector<std::pair<int, int>>();
     for (auto range: allRanges)
     {
         if (distinctRanges.empty()) distinctRanges.push_back(range);
@@ -87,7 +83,6 @@ std::vector<std::pair<int, int>> getDistinctRangesFromAllRanges(std::vector<std:
             );
         }
     }
-    return distinctRanges;
 }
 
 template <>
@@ -96,6 +91,7 @@ void StringVectorExercise::runPart1()
     std::vector<Sensor> sensors = parseInputLines(this -> data);
     int row(2000000);
     std::vector<std::pair<int, int>> allRangesWithoutBeacon = std::vector<std::pair<int, int>>();
+    std::vector<std::pair<int, int>> distinctRangesWithoutBeacon = std::vector<std::pair<int, int>>();
     for (auto sensor: sensors)
     {
         std::optional<std::pair<int, int>> maybeColRange = sensor.getColRangeWhereMinDistanceToRowShorterThanBeacon(row);
@@ -105,7 +101,9 @@ void StringVectorExercise::runPart1()
             allRangesWithoutBeacon.push_back(colRange);
         }
     }
-    std::vector<std::pair<int, int>> distinctRangesWithoutBeacon = getDistinctRangesFromAllRanges(allRangesWithoutBeacon);
+    getDistinctRangesFromAllRanges(
+        allRangesWithoutBeacon, distinctRangesWithoutBeacon
+    );
     // sum ranges
     int numColsWithoutBeacon(0);
     for (auto p: distinctRangesWithoutBeacon) numColsWithoutBeacon += p.second - p.first + 1;
@@ -127,30 +125,32 @@ void StringVectorExercise::runPart2()
         alreadyTaken.insert(sensor.getBeaconLoc());
     }
 
+    std::vector<std::pair<int, int>> allRangesWithoutBeacon = std::vector<std::pair<int, int>>();
+    std::vector<std::pair<int, int>> distinctRangesWithoutBeacon = std::vector<std::pair<int, int>>();
+    std::pair<int, int> range, toCheck;
     for (auto row=0; row <= rowLimit; row++)
     {
-        std::vector<std::pair<int, int>> allRangesWithoutBeacon = std::vector<std::pair<int, int>>();
         for (auto sensor: sensors)
         {
             std::optional<std::pair<int, int>> maybeColRange = sensor.getColRangeWhereMinDistanceToRowShorterThanBeacon(row);
-            if (maybeColRange.has_value()) 
-            {
-                allRangesWithoutBeacon.push_back(maybeColRange.value());
-            }
+            if (maybeColRange.has_value()) allRangesWithoutBeacon.push_back(maybeColRange.value());
         }
-        std::vector<std::pair<int, int>> distinctRangesWithoutBeacon = getDistinctRangesFromAllRanges(allRangesWithoutBeacon);
+        getDistinctRangesFromAllRanges(
+            allRangesWithoutBeacon, distinctRangesWithoutBeacon
+        );
         int currentCol(0), rangesIndex(0);
         while (currentCol <= rowLimit && rangesIndex < distinctRangesWithoutBeacon.size())
         {
-            std::pair<int, int> range(distinctRangesWithoutBeacon[rangesIndex]);
+            range = distinctRangesWithoutBeacon[rangesIndex];
             if (range.second < currentCol)
             {
                 if (rangesIndex == distinctRangesWithoutBeacon.size() - 1)
                 {
-                    if (!alreadyTaken.contains(std::make_pair(currentCol, row)))
+                    toCheck = std::make_pair(currentCol, row);
+                    if (!alreadyTaken.contains(toCheck))
                     {
                         found = true;
-                        beaconPos = std::make_pair(currentCol, row);
+                        beaconPos = toCheck;
                         break;
                     }
                 }
@@ -158,10 +158,11 @@ void StringVectorExercise::runPart2()
             }
             else if (range.first > currentCol)
             {
-                if (!alreadyTaken.contains(std::make_pair(currentCol, row)))
+                toCheck = std::make_pair(currentCol, row);
+                if (!alreadyTaken.contains(toCheck))
                 {
                     found = true;
-                    beaconPos = std::make_pair(currentCol, row);
+                    beaconPos = toCheck;
                     break;
                 }
                 currentCol ++;
@@ -172,6 +173,7 @@ void StringVectorExercise::runPart2()
             }
         }
         if (found) break;
+        allRangesWithoutBeacon.clear();
     }
     long result = (long)beaconPos.first * rowLimit + (long)beaconPos.second;
     std::cout << "Part 2: Tuning frequency for beacon " << result << std::endl;
