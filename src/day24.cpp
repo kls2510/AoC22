@@ -3,6 +3,7 @@
 #include <queue>
 #include <list>
 #include <unordered_map>
+#include <numeric>
 #include <exercise.hpp>
 
 using namespace exercise;
@@ -90,6 +91,7 @@ int bfs(
     int colLimit
 )
 {
+    int repeatsAfter(std::lcm(rowLimit, colLimit));
     struct {
         bool operator() (const std::tuple<int, int, std::pair<int, int>> l, const std::tuple<int, int, std::pair<int, int>> r) const { 
             int lDistance = std::get<0>(l) - std::get<1>(l);
@@ -138,12 +140,12 @@ int bfs(
                 )
                 && coordToCheck.second > 0 
                 && coordToCheck.second < colLimit 
-                && !visited.contains(std::make_pair(tsToCheck, coordToCheck))
+                && !visited.contains(std::make_pair(tsToCheck % repeatsAfter, coordToCheck))
                 && !windState.contains(coordToCheck)
             )
             {
                 q.push(std::make_tuple(tsToCheck + prio(targetPosition, coordToCheck), tsToCheck, coordToCheck));
-                visited.insert(std::make_tuple(tsToCheck, coordToCheck));
+                visited.insert(std::make_tuple(tsToCheck % repeatsAfter, coordToCheck));
             }
         }
     }
